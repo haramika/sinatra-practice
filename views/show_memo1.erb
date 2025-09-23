@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>メモアプリ</title>
+  </head>
+
+  <body>
+    <h1>メモアプリ</h1>
+    <h2>メモ１</h2>
+    <p>内容１</p>
+    <a class="btn" href="edit_memo1">編集</a>
+    <form action="/memos/1" method="post" style="display:inline;">
+      <input type="hidden" name="_method" value="delete">
+      <input type="submit" value="削除">
+    </form>
+  </body>
+
+</html>

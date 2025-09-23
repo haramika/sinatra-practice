@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>メモアプリ</title>
+  </head>
+
+  <body>
+    <h1>メモアプリ</h1>
+    <form action="/memos/1" method="post">
+      <input type="hidden" name="_method" value="patch">
+      <div>
+        <label for="title">タイトル</label><br>
+        <input type="text" name="title" id="title" value="メモ１">
+      </div>
+      <div>
+        <label for="content">内容</label><br>
+        <textarea name="content" id="content" cols="30" rows="10">内容１</textarea>
+      </div>
+      <div>
+        <input type="submit" value="保存">
+      </div>
+    </form>
+  </body>
+</html>
