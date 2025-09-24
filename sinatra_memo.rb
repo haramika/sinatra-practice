@@ -12,9 +12,13 @@ get '/memo/new_memo' do
 end
 
 get '/memo/show_memo1' do
+  @memo_title = "メモ１"
+  @content = "内容１"
   erb :show_memo1
 end
 
 get '/memo/edit_memo1' do
+  @memo_title = "メモ１"
+  @content = "内容１"
   erb :edit_memo1
 end
