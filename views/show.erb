@@ -1,0 +1,12 @@
+<h1>メモアプリ</h1>
+  <h2>
+    <%= @json_date[@id]['title'] %>
+  </h2>
+  <p>
+    <%= @json_date[@id]['body'] %>
+  </p>
+  <a class="btn" href="/memo/<%= @id + 1 %>/edit"><input type="submit" value="編集"></a>
+  <form action="/memo/top" method="post" style="display:inline;">
+    <input type="hidden" name="_method" value="delete">
+    <input type="submit" value="削除">
+  </form>
