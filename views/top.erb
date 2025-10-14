@@ -1,9 +1,13 @@
 <h1>メモアプリ</h1>
-  <a class="btn" href="/memo/new"><input type="submit" value="追加"></a>
-  <ul>
-    <% @json_data.each do |data| %>
-      <li><a href="/memo/<%= data['id'] %>">
-          <%= data['title'] %>
-        </a></li>
-      <% end %>
-  </ul>
+<form>
+  <input type="submit" formaction="/memo/new" value="追加">
+</form>
+<ul>
+  <% @json_data.each do |data| %>
+    <li>
+      <a href="/memo/<%= h(data['id']) %>">
+        <%= h(data['title']) %>
+      </a>
+    </li>
+  <% end %>
+</ul>

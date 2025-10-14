@@ -3,6 +3,13 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
+require "cgi"
+
+helpers do
+  def h(text)
+    CGI.escapeHTML(text.to_s)
+  end
+end
 
 def load_json
   File.open('memo.json') do |file|
@@ -29,7 +36,7 @@ post '/memo/top' do
   title = params[:title]
   body = params[:content]
 
-  existing_data = JSON.parse(File.read('memo.json'))
+  existing_data = read_json
   existing_data['memos'].push({ 'id' => existing_data['memos'].size + 1, 'title' => title, 'body' => body })
 
   open_json(existing_data)
@@ -41,7 +48,7 @@ patch '/memo/top' do
   title = params[:title]
   body = params[:content]
 
-  existing_data = JSON.parse(File.read('memo.json'))
+  existing_data = read_json
   existing_data['memos'][params[:id].to_i - 1]['title'] = title
   existing_data['memos'][params[:id].to_i - 1]['body'] = body
 
@@ -51,7 +58,7 @@ patch '/memo/top' do
 end
 
 delete '/memo/top' do
-  existing_data = JSON.parse(File.read('memo.json'))
+  existing_data = read_json
   existing_data['memos'].delete_at(params[:id].to_i - 1)
 
   open_json(existing_data)
