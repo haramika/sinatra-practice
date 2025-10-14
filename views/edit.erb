@@ -1,15 +1,19 @@
 <h1>メモアプリ</h1>
-<form action="/memo/top" method="post">
+<form action="/memo/<%= @id %>/edit" method="post">
   <input type="hidden" name="_method" value="patch">
   <div>
     <label for="title">タイトル</label><br>
-    <input type="text" name="title" value="<%= h(@json_data[@id]['title']) %>">
+    <% @json_data.each do |data| %>
+      <% if data.values.include?(@id) %>
+        <input type="text" name="title" value="<%= h(data['title']) %>">
   </div>
   <div>
     <label for="content">内容</label><br>
-    <textarea name="content" cols="30" rows="10"><%= h(@json_data[@id]['body']) %></textarea>
+    <textarea name="content" cols="30" rows="10"><%= h(data['body']) %></textarea>
+      <% end %>
+    <% end %>
   </div>
   <div>
-    <input type="submit" value="保存">
+    <input type="submit" onclick="location.href='/memo/top'" value="保存">
   </div>
 </form>

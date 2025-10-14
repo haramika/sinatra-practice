@@ -3,7 +3,8 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
-require "cgi"
+require 'securerandom'
+require 'cgi'
 
 helpers do
   def h(text)
@@ -37,29 +38,36 @@ post '/memo/top' do
   body = params[:content]
 
   existing_data = read_json
-  existing_data['memos'].push({ 'id' => existing_data['memos'].size + 1, 'title' => title, 'body' => body })
+  existing_data['memos'].push({ 'id' => SecureRandom.uuid, 'title' => title, 'body' => body })
 
   open_json(existing_data)
 
   redirect '/memo/top'
 end
 
-patch '/memo/top' do
+patch '/memo/:id/edit' do
   title = params[:title]
   body = params[:content]
+  @id = params[:id]
 
   existing_data = read_json
-  existing_data['memos'][params[:id].to_i - 1]['title'] = title
-  existing_data['memos'][params[:id].to_i - 1]['body'] = body
+  existing_data['memos'].each do |data|
+    data['title'] = title if data.value?(params[:id])
+    data['body'] = body if data.value?(params[:id])
+  end
 
   open_json(existing_data)
 
   redirect '/memo/top'
 end
 
-delete '/memo/top' do
+delete '/memo/:id/delete' do
+  @id = params[:id]
+
   existing_data = read_json
-  existing_data['memos'].delete_at(params[:id].to_i - 1)
+  existing_data['memos'].delete_if do |data|
+    data.value?(params[:id])
+  end
 
   open_json(existing_data)
 
@@ -72,12 +80,12 @@ end
 
 get '/memo/:id' do
   @json_data = load_json['memos']
-  @id = params[:id].to_i - 1
+  @id = params[:id]
   erb :show
 end
 
 get '/memo/:id/edit' do
   @json_data = load_json['memos']
-  @id = params[:id].to_i - 1
+  @id = params[:id]
   erb :edit
 end

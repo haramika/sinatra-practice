@@ -1,13 +1,17 @@
 <h1>メモアプリ</h1>
-<p>
-  <%= h(@json_data[@id]['title']) %>
-</p>
-<p>
-  <%= h(@json_data[@id]['body']) %>
-</p>
+<% @json_data.each do |hash| %>
+  <% if hash.values.include?(@id) %>
+    <p>
+      <%= h(hash['title']) %>
+    </p>
+    <p>
+      <%= h(hash['body']) %>
+    </p>
+  <% end %>
+<% end %>
 
 <form method="?" action="?">
-  <input type="submit" value="編集" formaction="/memo/<%= @id + 1 %>/edit" formmethod="get">
+  <input type="submit" value="編集" formaction="/memo/<%= @id %>/edit" formmethod="get">
   <input type="hidden" name="_method" value="delete">
-  <input type="submit" value="削除" formaction="/memo/top" formmethod="post">
+  <input type="submit" value="削除" formaction="/memo/<%= @id %>/delete" formmethod="post" onclick="location.href='/memo/top'">
 </form>
