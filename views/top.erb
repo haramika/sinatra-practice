@@ -1,13 +1,10 @@
 <h1>メモアプリ</h1>
-<form>
-  <input type="submit" formaction="/memo/new" value="追加">
-</form>
+<a href="/memos/new">追加</a>
 <ul>
   <% @json_data.each do |data| %>
-    <li>
-      <a href="/memo/<%= h(data['id']) %>">
-        <%= h(data['title']) %>
-      </a>
-    </li>
+  <li>
+    <a href="/memos/<%= h(data[0]) %>">
+    <%= h(data[1]['title']) %>
+  </li>
   <% end %>
 </ul>

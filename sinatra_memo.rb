@@ -22,69 +22,65 @@ def read_json
   JSON.parse(File.read('memo.json'))
 end
 
-def open_json(data)
+def rewrite_json(data)
   File.open('memo.json', 'w') do |f|
     JSON.dump(data, f)
   end
 end
 
-get '/memo/top' do
+get '/memos' do
   @json_data = load_json['memos']
   erb :top
 end
 
-post '/memo/top' do
+post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
   existing_data = read_json
-  existing_data['memos'].push({ 'id' => SecureRandom.uuid, 'title' => title, 'body' => body })
+  existing_data['memos'][SecureRandom.uuid] = { 'title' => title, 'body' => body }
 
-  open_json(existing_data)
+  rewrite_json(existing_data)
 
-  redirect '/memo/top'
+  redirect '/memos'
 end
 
-patch '/memo/:id/edit' do
+patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
   @id = params[:id]
 
   existing_data = read_json
-  existing_data['memos'].each do |data|
-    data['title'] = title if data.value?(params[:id])
-    data['body'] = body if data.value?(params[:id])
-  end
+  existing_data['memos'][params[:id]]['title'] = title
+  existing_data['memos'][params[:id]]['body'] = body
 
-  open_json(existing_data)
+  rewrite_json(existing_data)
 
-  redirect '/memo/top'
+  redirect '/memos'
 end
 
-delete '/memo/:id/delete' do
+delete '/memos/:id' do
   @id = params[:id]
 
   existing_data = read_json
-  existing_data['memos'].delete_if do |data|
-    data.value?(params[:id])
-  end
+  existing_data['memos'].delete(params[:id])
 
-  open_json(existing_data)
+  rewrite_json(existing_data)
 
-  redirect '/memo/top'
+  redirect '/memos'
 end
 
-get '/memo/new' do
+get '/memos/new' do
   erb :new
 end
 
-get '/memo/:id' do
+get '/memos/:id' do
   @json_data = load_json['memos']
   @id = params[:id]
   erb :show
 end
 
-get '/memo/:id/edit' do
+get '/memos/:id/edit' do
   @json_data = load_json['memos']
   @id = params[:id]
   erb :edit
