@@ -6,6 +6,14 @@ require 'json'
 require 'securerandom'
 require 'cgi'
 
+filename = 'memo.json'
+if !File.exist?(filename)
+  File.open(filename, "w", 0644) do |file|
+    file.puts '{ "memos":{} }'
+  end
+  File.read(filename)
+end
+
 helpers do
   def h(text)
     CGI.escapeHTML(text.to_s)
@@ -24,6 +32,7 @@ end
 
 get '/memos' do
   @json_memo_data = load_json['memos']
+  @no_memo_coment = "メモがありません"
   erb :top
 end
 
