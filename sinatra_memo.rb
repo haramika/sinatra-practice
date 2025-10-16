@@ -13,12 +13,6 @@ helpers do
 end
 
 def load_json
-  File.open('memo.json') do |file|
-    JSON.parse(file.read)
-  end
-end
-
-def read_json
   JSON.parse(File.read('memo.json'))
 end
 
@@ -29,7 +23,7 @@ def rewrite_json(data)
 end
 
 get '/memos' do
-  @json_data = load_json['memos']
+  @json_memo_data = load_json['memos']
   erb :top
 end
 
@@ -37,10 +31,10 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  existing_data = read_json
-  existing_data['memos'][SecureRandom.uuid] = { 'title' => title, 'body' => body }
+  json_data = load_json
+  json_data['memos'][SecureRandom.uuid] = { 'title' => title, 'body' => body }
 
-  rewrite_json(existing_data)
+  rewrite_json(json_data)
 
   redirect '/memos'
 end
@@ -50,11 +44,12 @@ patch '/memos/:id' do
   body = params[:content]
   @id = params[:id]
 
-  existing_data = read_json
-  existing_data['memos'][params[:id]]['title'] = title
-  existing_data['memos'][params[:id]]['body'] = body
+  json_data = load_json
+  title_and_body = json_data['memos'][params[:id]]
+  title_and_body['title'] = title
+  title_and_body['body'] = body
 
-  rewrite_json(existing_data)
+  rewrite_json(json_data)
 
   redirect '/memos'
 end
@@ -62,10 +57,10 @@ end
 delete '/memos/:id' do
   @id = params[:id]
 
-  existing_data = read_json
-  existing_data['memos'].delete(params[:id])
+  json_data = load_json
+  json_data['memos'].delete(params[:id])
 
-  rewrite_json(existing_data)
+  rewrite_json(json_data)
 
   redirect '/memos'
 end
@@ -75,13 +70,13 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @json_data = load_json['memos']
+  @json_memo_data = load_json['memos']
   @id = params[:id]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @json_data = load_json['memos']
+  @json_memo_data = load_json['memos']
   @id = params[:id]
   erb :edit
 end
