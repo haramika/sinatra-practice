@@ -6,14 +6,6 @@ require 'json'
 require 'securerandom'
 require 'cgi'
 
-filename = 'memo.json'
-if !File.exist?(filename)
-  File.open(filename, 'w') do |file|
-    file.puts '{ "memos":{} }'
-  end
-  File.read(filename)
-end
-
 helpers do
   def h(text)
     CGI.escapeHTML(text.to_s)
@@ -31,6 +23,14 @@ def rewrite_json(data)
 end
 
 get '/memos' do
+  filename = 'memo.json'
+  if !File.exist?(filename)
+    File.open(filename, 'w') do |file|
+      file.puts '{ "memos":{} }'
+    end
+    File.read(filename)
+  end
+
   @json_memo_data = load_json['memos']
   @no_memo_coment = 'メモがありません'
   erb :top
