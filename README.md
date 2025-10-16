@@ -13,7 +13,7 @@ RubyのSinatraを用いてメモアプリを作成しました。
 
 ・必要なGemをインストールする
 
-　　bundle install
+    bundle install
 
 ・アプリケーションを起動する
 
@@ -21,4 +21,4 @@ RubyのSinatraを用いてメモアプリを作成しました。
   
 ・ブラウザで下記にアクセスする
 
-    http://localhost:4567/memo/top
+    http://localhost:4567/memos
