@@ -70,13 +70,15 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @json_memo_data = load_json['memos']
+  @json_memo_title = load_json['memos'][params[:id]]['title']
+  @json_memo_body = load_json['memos'][params[:id]]['body']
   @id = params[:id]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @json_memo_data = load_json['memos']
+  @json_memo_title = load_json['memos'][params[:id]]['title']
+  @json_memo_body = load_json['memos'][params[:id]]['body']
   @id = params[:id]
   erb :edit
 end

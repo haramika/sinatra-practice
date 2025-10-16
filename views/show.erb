@@ -1,9 +1,9 @@
 <h1>メモアプリ</h1>
 <p>
-  <%= h(@json_memo_data[@id]['title']) %>
+  <%= h(@json_memo_title) %>
 </p>
 <p>
-  <%= h(@json_memo_data[@id]['body']) %>
+  <%= h(@json_memo_body) %>
 </p>
 <a href="/memos/<%= @id %>/edit">編集</a>
 <form action="/memos/<%= @id %>" method="post">
