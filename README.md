@@ -11,6 +11,10 @@ RubyのSinatraを用いてメモアプリを作成しました。
   
     cd sinatra-practice
 
+・必要なGemをインストールする
+
+　　bundle install
+
 ・アプリケーションを起動する
 
     ruby sinatra_memo.rb
