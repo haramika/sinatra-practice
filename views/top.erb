@@ -1,10 +1,10 @@
 <h1>メモアプリ</h1>
 <a href="/memos/new">追加</a>
 <ul>
-  <% @json_data.each do |data| %>
+  <% @json_data.each do |key, value| %>
   <li>
-    <a href="/memos/<%= h(data[0]) %>">
-    <%= h(data[1]['title']) %>
+    <a href="/memos/<%= h(key) %>">
+    <%= h(value['title']) %>
   </li>
   <% end %>
 </ul>
