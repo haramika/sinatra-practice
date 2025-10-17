@@ -1,13 +1,15 @@
 <h1>メモアプリ</h1>
 <a href="/memos/new">追加</a>
 <ul>
-  <% if @json_memo_data.empty? %>
-    <%= h(@no_memo_coment) %>
-　<% else %>
-    <% @json_memo_data.each do |key, value| %>
+  <% if @memos.empty? %>
     <li>
-      <a href="/memos/<%= h(key) %>">
-      <%= h(value['title']) %>
+      <p>メモがありません</p>
+    </li>
+　<% else %>
+    <% @memos.each do |id, memo| %>
+    <li>
+      <a href="/memos/<%= id %>">
+      <%= h(memo['title']) %>
     </li>
     <% end %>
   <% end %>

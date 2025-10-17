@@ -6,33 +6,30 @@ require 'json'
 require 'securerandom'
 require 'cgi'
 
+memos_file = 'memos.json'
+
 helpers do
   def h(text)
     CGI.escapeHTML(text.to_s)
   end
 end
 
-def load_json
-  JSON.parse(File.read('memo.json'))
+def load_memos(file)
+  JSON.parse(File.read(file))
 end
 
-def rewrite_json(data)
-  File.open('memo.json', 'w') do |f|
+def save_memos(file, data)
+  File.open(file, 'w') do |f|
     JSON.dump(data, f)
   end
 end
 
 get '/memos' do
-  filename = 'memo.json'
-  if !File.exist?(filename)
-    File.open(filename, 'w') do |file|
-      file.puts '{ "memos":{} }'
-    end
-    File.read(filename)
-  end
+  empty_memos = {}
+  save_memos(memos_file, empty_memos) if !File.exist?(memos_file)
 
-  @json_memo_data = load_json['memos']
-  @no_memo_coment = 'メモがありません'
+  @memos = load_memos(memos_file)
+  @id = params[:id]
   erb :top
 end
 
@@ -40,10 +37,10 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  json_data = load_json
-  json_data['memos'][SecureRandom.uuid] = { 'title' => title, 'body' => body }
+  memos = load_memos(memos_file)
+  memos[SecureRandom.uuid] = { 'title' => title, 'body' => body }
 
-  rewrite_json(json_data)
+  save_memos(memos_file, memos)
 
   redirect '/memos'
 end
@@ -51,25 +48,22 @@ end
 patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
-  @id = params[:id]
 
-  json_data = load_json
-  title_and_body = json_data['memos'][params[:id]]
-  title_and_body['title'] = title
-  title_and_body['body'] = body
+  memos = load_memos(memos_file)
+  memo = memos[params[:id]]
+  memo['title'] = title
+  memo['body'] = body
 
-  rewrite_json(json_data)
+  save_memos(memos_file, memos)
 
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  @id = params[:id]
+  memos = load_memos(memos_file)
+  memos.delete(params[:id])
 
-  json_data = load_json
-  json_data['memos'].delete(params[:id])
-
-  rewrite_json(json_data)
+  save_memos(memos_file, memos)
 
   redirect '/memos'
 end
@@ -79,15 +73,13 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @json_memo_title = load_json['memos'][params[:id]]['title']
-  @json_memo_body = load_json['memos'][params[:id]]['body']
+  @memo = load_memos(memos_file)[params[:id]]
   @id = params[:id]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @json_memo_title = load_json['memos'][params[:id]]['title']
-  @json_memo_body = load_json['memos'][params[:id]]['body']
+  @memo = load_memos(memos_file)[params[:id]]
   @id = params[:id]
   erb :edit
 end

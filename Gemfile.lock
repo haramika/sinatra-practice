@@ -100,13 +100,6 @@ GEM
     rubocop-ast (1.47.1)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
-    rubocop-fjord (0.3.1)
-      rubocop (>= 1.0)
-      rubocop-performance
-    rubocop-performance (1.26.0)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     securerandom (0.4.1)
@@ -138,7 +131,6 @@ PLATFORMS
 
 DEPENDENCIES
   erb_lint
-  rubocop-fjord
   sinatra
   sinatra-contrib
 
