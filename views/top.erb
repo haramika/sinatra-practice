@@ -2,9 +2,7 @@
 <a href="/memos/new">追加</a>
 <ul>
   <% if @memos.empty? %>
-    <li>
-      <p>メモがありません</p>
-    </li>
+    <li>メモがありません</li>
 　<% else %>
     <% @memos.each do |id, memo| %>
     <li>
