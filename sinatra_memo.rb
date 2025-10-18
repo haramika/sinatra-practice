@@ -6,7 +6,7 @@ require 'json'
 require 'securerandom'
 require 'cgi'
 
-memos_file = 'memos.json'
+MEMOS_FILE = 'memos.json'
 
 helpers do
   def h(text)
@@ -14,21 +14,21 @@ helpers do
   end
 end
 
-def load_memos(file)
-  JSON.parse(File.read(file))
+def load_memos
+  JSON.parse(File.read(MEMOS_FILE))
 end
 
-def save_memos(file, data)
-  File.open(file, 'w') do |f|
+def save_memos(data)
+  File.open(MEMOS_FILE, 'w') do |f|
     JSON.dump(data, f)
   end
 end
 
 get '/memos' do
   empty_memos = {}
-  save_memos(memos_file, empty_memos) if !File.exist?(memos_file)
+  save_memo(sempty_memos) if !File.exist?(MEMOS_FILE)
 
-  @memos = load_memos(memos_file)
+  @memos = load_memos
   @id = params[:id]
   erb :top
 end
@@ -37,10 +37,10 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos(memos_file)
+  memos = load_memos
   memos[SecureRandom.uuid] = { 'title' => title, 'body' => body }
 
-  save_memos(memos_file, memos)
+  save_memos(memos)
 
   redirect '/memos'
 end
@@ -49,21 +49,21 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos(memos_file)
+  memos = load_memos
   memo = memos[params[:id]]
   memo['title'] = title
   memo['body'] = body
 
-  save_memos(memos_file, memos)
+  save_memos(memos)
 
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  memos = load_memos(memos_file)
+  memos = load_memos
   memos.delete(params[:id])
 
-  save_memos(memos_file, memos)
+  save_memos(memos)
 
   redirect '/memos'
 end
@@ -73,13 +73,13 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = load_memos(memos_file)[params[:id]]
+  @memo = load_memos[params[:id]]
   @id = params[:id]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = load_memos(memos_file)[params[:id]]
+  @memo = load_memos[params[:id]]
   @id = params[:id]
   erb :edit
 end
