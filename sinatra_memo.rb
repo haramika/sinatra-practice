@@ -18,9 +18,9 @@ def load_memos
   JSON.parse(File.read(MEMOS_FILE))
 end
 
-def save_memos(data)
+def save_memos(memos)
   File.open(MEMOS_FILE, 'w') do |f|
-    JSON.dump(data, f)
+    JSON.dump(memos, f)
   end
 end
 
