@@ -6,8 +6,7 @@
 　<% else %>
     <% @memos.each do |id, memo| %>
     <li>
-      <a href="/memos/<%= id %>"></a>
-      <%= h(memo['title']) %>
+      <a href="/memos/<%= id %>"><%= h(memo['title']) %></a>
     </li>
     <% end %>
   <% end %>

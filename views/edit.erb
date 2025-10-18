@@ -1,5 +1,5 @@
 <h1>メモアプリ</h1>
-<form action="/memos/<%= @id %>" method="post">
+<form action="/memos/<%= @memo['id'] %>" method="post">
   <input type="hidden" name="_method" value="patch">
   <div>
     <label for="title">タイトル</label><br>
