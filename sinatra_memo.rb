@@ -24,6 +24,10 @@ def save_memos(memos)
   end
 end
 
+def find_memo(id)
+  load_memos[id]
+end
+
 get '/memos' do
   save_memos({}) if !File.exist?(MEMOS_FILE)
 
@@ -37,7 +41,7 @@ post '/memos/new' do
 
   memos = load_memos
   id = SecureRandom.uuid
-  memos[id] = {'id' => id, 'title' => title, 'body' => body }
+  memos[id] = { 'id' => id, 'title' => title, 'body' => body }
 
   save_memos(memos)
 
@@ -72,11 +76,11 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = load_memos[params[:id]]
+  @memo = find_memo(params[:id])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = load_memos[params[:id]]
+  @memo = find_memo(params[:id])
   erb :edit
 end
