@@ -25,8 +25,7 @@ def save_memos(data)
 end
 
 get '/memos' do
-  empty_memos = {}
-  save_memo(sempty_memos) if !File.exist?(MEMOS_FILE)
+  save_memos({}) if !File.exist?(MEMOS_FILE)
 
   @memos = load_memos
   @id = params[:id]
