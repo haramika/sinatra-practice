@@ -1,0 +1,13 @@
+<h1>メモアプリ</h1>
+<a href="/memos/new">追加</a>
+<ul>
+  <% if @memos.empty? %>
+    <li>メモがありません</li>
+　<% else %>
+    <% @memos.each do |id, memo| %>
+    <li>
+      <a href="/memos/<%= id %>"><%= h(memo['title']) %></a>
+    </li>
+    <% end %>
+  <% end %>
+</ul>

@@ -1,0 +1,12 @@
+<h1>メモアプリ</h1>
+<h2>
+  <%= h(@memo['title']) %>
+</h2>
+<p>
+  <%= h(@memo['body']) %>
+</p>
+<a href="/memos/<%= @memo['id'] %>/edit">編集</a>
+<form action="/memos/<%= @memo['id'] %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <input type="submit" value="削除">
+</form>
