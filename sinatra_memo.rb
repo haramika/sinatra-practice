@@ -54,8 +54,7 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  connect_memos.exec_params('UPDATE memos SET title = $1 WHERE id = $2', [title, params[:id]])
-  connect_memos.exec_params('UPDATE memos SET body = $1 WHERE id = $2', [body, params[:id]])
+  connect_memos.exec_params('UPDATE memos SET title = $1, body = $2 WHERE id = $3', [title, body, params[:id]])
   connect_memos.close
 
   redirect '/memos'
