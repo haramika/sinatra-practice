@@ -2,11 +2,11 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
 require 'securerandom'
 require 'cgi'
+require 'pg'
 
-MEMOS_FILE = 'memos.json'
+memos = {}
 
 helpers do
   def h(text)
@@ -14,36 +14,37 @@ helpers do
   end
 end
 
-def load_memos
-  JSON.parse(File.read(MEMOS_FILE))
+def connect_memos
+  PG::Connection.new(host: 'localhost', dbname: 'memo')
 end
 
-def save_memos(memos)
-  File.open(MEMOS_FILE, 'w') do |f|
-    JSON.dump(memos, f)
+def load_memos
+  connect_memos.exec('SELECT * FROM memos')
+end
+
+def make_memos(memos)
+  load_memos.each do |memo|
+    memos[memo['id']] = memo
   end
 end
 
-def find_memo(id)
-  load_memos[id]
+def find_memo(memos, id)
+  memos[id]
 end
 
 get '/memos' do
-  save_memos({}) if !File.exist?(MEMOS_FILE)
+  make_memos(memos)
 
-  @memos = load_memos
+  @memos = memos
   erb :top
 end
 
 post '/memos/new' do
+  id = SecureRandom.uuid
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos
-  id = SecureRandom.uuid
-  memos[id] = { 'id' => id, 'title' => title, 'body' => body }
-
-  save_memos(memos)
+  connect_memos.exec_params('INSERT INTO memos (id, title, body) VALUES ($1, $2, $3)', [id, title, body])
 
   redirect '/memos'
 end
@@ -52,21 +53,14 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos
-  memo = memos[params[:id]]
-  memo['title'] = title
-  memo['body'] = body
-
-  save_memos(memos)
+  connect_memos.exec_params('UPDATE memos SET title = $1 WHERE id = $2', [title, params[:id]])
+  connect_memos.exec_params('UPDATE memos SET body = $1 WHERE id = $2', [body, params[:id]])
 
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  memos = load_memos
-  memos.delete(params[:id])
-
-  save_memos(memos)
+  connect_memos.exec_params('DELETE FROM memos WHERE id = $1', [params[:id]])
 
   redirect '/memos'
 end
@@ -76,11 +70,15 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = find_memo(params[:id])
+  make_memos(memos)
+
+  @memo = find_memo(memos, params[:id])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = find_memo(params[:id])
+  make_memos(memos)
+
+  @memo = find_memo(memos, params[:id])
   erb :edit
 end
