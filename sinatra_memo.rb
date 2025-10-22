@@ -35,7 +35,6 @@ post '/memos/new' do
   body = params[:content]
 
   connect_memos.exec_params('INSERT INTO memos (title, body) VALUES ($1, $2)', [title, body])
-  connect_memos.close
   redirect '/memos'
 end
 
@@ -44,13 +43,11 @@ patch '/memos/:id' do
   body = params[:content]
 
   connect_memos.exec_params('UPDATE memos SET title = $1, body = $2 WHERE id = $3', [title, body, params[:id]])
-  connect_memos.close
   redirect '/memos'
 end
 
 delete '/memos/:id' do
   connect_memos.exec_params('DELETE FROM memos WHERE id = $1', [params[:id]])
-  connect_memos.close
   redirect '/memos'
 end
 
