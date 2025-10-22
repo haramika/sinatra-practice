@@ -23,7 +23,7 @@ def save_memos(sql, values)
 end
 
 def find_memo(id)
-  update_memos('SELECT * FROM memos WHERE id = $1', [id])
+  save_memos('SELECT * FROM memos WHERE id = $1', [id])
 end
 
 get '/memos' do
