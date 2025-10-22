@@ -6,22 +6,24 @@ require 'securerandom'
 require 'cgi'
 require 'pg'
 
+CONN = PG::Connection.new(host: 'localhost', dbname: 'memo')
+
 helpers do
   def h(text)
     CGI.escapeHTML(text.to_s)
   end
 end
 
-def connect_memos
-  PG::Connection.new(host: 'localhost', dbname: 'memo')
+def load_memos
+  CONN.exec('SELECT * FROM memos ORDER BY id ASC')
 end
 
-def load_memos
-  connect_memos.exec('SELECT * FROM memos ORDER BY id ASC')
+def update_memos(sql, values)
+  CONN.exec_params(sql, values)
 end
 
 def find_memos(id)
-  connect_memos.exec_params('SELECT * FROM memos WHERE id = $1', [id])
+  update_memos('SELECT * FROM memos WHERE id = $1', [id])
 end
 
 get '/memos' do
@@ -34,7 +36,8 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  connect_memos.exec_params('INSERT INTO memos (title, body) VALUES ($1, $2)', [title, body])
+  sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
+  update_memos(sql, [title, body])
   redirect '/memos'
 end
 
@@ -42,12 +45,14 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  connect_memos.exec_params('UPDATE memos SET title = $1, body = $2 WHERE id = $3', [title, body, params[:id]])
+  sql = 'UPDATE memos SET title = $1, body = $2 WHERE id = $3'
+  update_memos(sql, [title, body, params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  connect_memos.exec_params('DELETE FROM memos WHERE id = $1', [params[:id]])
+  sql = 'DELETE FROM memos WHERE id = $1'
+  update_memos(sql, [params[:id]])
   redirect '/memos'
 end
 
