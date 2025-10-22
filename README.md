@@ -24,7 +24,7 @@ RubyのSinatraを用いてメモアプリを作成しました。(DBにデータ
 - テーブルを作成する
 
     CREATE TABLE memos
-    (id TEXT not null,
+    (id serial not null,
     title TEXT,
     body TEXT,
     PRIMARY KEY(id));
