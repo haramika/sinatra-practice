@@ -6,8 +6,6 @@ require 'securerandom'
 require 'cgi'
 require 'pg'
 
-memos = {}
-
 helpers do
   def h(text)
     CGI.escapeHTML(text.to_s)
@@ -22,31 +20,22 @@ def load_memos
   connect_memos.exec('SELECT * FROM memos ORDER BY id ASC')
 end
 
-def make_memos(memos)
-  load_memos.each do |memo|
-    memos[memo['id']] = memo
-  end
-end
-
-def find_memo(memos, id)
-  memos[id]
+def find_memos(id)
+  connect_memos.exec_params('SELECT * FROM memos WHERE id = $1', [id])
 end
 
 get '/memos' do
-  make_memos(memos)
+  @memos = load_memos
 
-  @memos = memos
   erb :top
 end
 
 post '/memos/new' do
-  id = SecureRandom.uuid
   title = params[:title]
   body = params[:content]
 
-  connect_memos.exec_params('INSERT INTO memos (id, title, body) VALUES ($1, $2, $3)', [id, title, body])
+  connect_memos.exec_params('INSERT INTO memos (title, body) VALUES ($1, $2)', [title, body])
   connect_memos.close
-
   redirect '/memos'
 end
 
@@ -56,14 +45,12 @@ patch '/memos/:id' do
 
   connect_memos.exec_params('UPDATE memos SET title = $1, body = $2 WHERE id = $3', [title, body, params[:id]])
   connect_memos.close
-
   redirect '/memos'
 end
 
 delete '/memos/:id' do
   connect_memos.exec_params('DELETE FROM memos WHERE id = $1', [params[:id]])
   connect_memos.close
-
   redirect '/memos'
 end
 
@@ -72,15 +59,13 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  make_memos(memos)
+  @memo = find_memos(params[:id])[0]
 
-  @memo = find_memo(memos, params[:id])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  make_memos(memos)
-
-  @memo = find_memo(memos, params[:id])
+  @memo = find_memos(params[:id])[0]
+  
   erb :edit
 end

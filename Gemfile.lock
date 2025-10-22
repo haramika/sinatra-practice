@@ -67,6 +67,8 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2)
+    pg (1.6.2-x86_64-darwin)
     prism (1.5.1)
     racc (1.8.1)
     rack (3.2.1)
@@ -131,6 +133,7 @@ PLATFORMS
 
 DEPENDENCIES
   erb_lint
+  pg
   sinatra
   sinatra-contrib
 
