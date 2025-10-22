@@ -19,7 +19,7 @@ def connect_memos
 end
 
 def load_memos
-  connect_memos.exec('SELECT * FROM memos')
+  connect_memos.exec('SELECT * FROM memos ORDER BY id ASC')
 end
 
 def make_memos(memos)
