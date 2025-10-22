@@ -18,11 +18,11 @@ def load_memos
   CONN.exec('SELECT * FROM memos ORDER BY id ASC')
 end
 
-def update_memos(sql, values)
+def save_memos(sql, values)
   CONN.exec_params(sql, values)
 end
 
-def find_memos(id)
+def find_memo(id)
   update_memos('SELECT * FROM memos WHERE id = $1', [id])
 end
 
@@ -37,7 +37,7 @@ post '/memos/new' do
   body = params[:content]
 
   sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
-  update_memos(sql, [title, body])
+  save_memos(sql, [title, body])
   redirect '/memos'
 end
 
@@ -46,13 +46,13 @@ patch '/memos/:id' do
   body = params[:content]
 
   sql = 'UPDATE memos SET title = $1, body = $2 WHERE id = $3'
-  update_memos(sql, [title, body, params[:id]])
+  save_memos(sql, [title, body, params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
   sql = 'DELETE FROM memos WHERE id = $1'
-  update_memos(sql, [params[:id]])
+  save_memos(sql, [params[:id]])
   redirect '/memos'
 end
 
@@ -61,13 +61,11 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = find_memos(params[:id])[0]
-
+  @memo = find_memo(params[:id])[0]
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = find_memos(params[:id])[0]
-  
+  @memo = find_memo(params[:id])[0]
   erb :edit
 end
