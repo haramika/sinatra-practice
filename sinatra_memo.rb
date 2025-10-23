@@ -36,6 +36,32 @@ def find_memo(id)
   make_prepared_statement(sql, [id])
 end
 
+def add_memo(values)
+  sql = <<~SQL
+    INSERT INTO memos
+    (title, body)
+    VALUES ($1, $2)
+  SQL
+  make_prepared_statement(sql, values)
+end
+
+def edit_memo(values)
+  sql = <<~SQL
+    UPDATE memos
+    SET title = $1, body = $2
+    WHERE id = $3
+  SQL
+  make_prepared_statement(sql, values)
+end
+
+def delete_memo(values)
+  sql = <<~SQL
+    DELETE FROM memos
+    WHERE id = $1
+  SQL
+  make_prepared_statement(sql, values)
+end
+
 get '/memos' do
   @memos = load_memos
 
@@ -46,8 +72,7 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
-  make_prepared_statement(sql, [title, body])
+  add_memo([title, body])
   redirect '/memos'
 end
 
@@ -55,14 +80,12 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  sql = 'UPDATE memos SET title = $1, body = $2 WHERE id = $3'
-  make_prepared_statement(sql, [title, body, params[:id]])
+  edit_memo([title, body, params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  sql = 'DELETE FROM memos WHERE id = $1'
-  make_prepared_statement(sql, [params[:id]])
+  delete_memo([params[:id]])
   redirect '/memos'
 end
 
