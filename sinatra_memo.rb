@@ -15,15 +15,25 @@ helpers do
 end
 
 def load_memos
-  CONN.exec('SELECT * FROM memos ORDER BY id ASC')
+  sql = <<~SQL
+    SELECT *
+    FROM memos
+    ORDER BY id
+  SQL
+  CONN.exec(sql)
 end
 
-def save_memos(sql, values)
+def make_prepared_statement(sql, values)
   CONN.exec_params(sql, values)
 end
 
 def find_memo(id)
-  save_memos('SELECT * FROM memos WHERE id = $1', [id])
+  sql = <<~SQL
+    SELECT *
+    FROM memos
+    WHERE id = $1
+  SQL
+  make_prepared_statement(sql, [id])
 end
 
 get '/memos' do
@@ -37,7 +47,7 @@ post '/memos/new' do
   body = params[:content]
 
   sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
-  save_memos(sql, [title, body])
+  make_prepared_statement(sql, [title, body])
   redirect '/memos'
 end
 
@@ -46,13 +56,13 @@ patch '/memos/:id' do
   body = params[:content]
 
   sql = 'UPDATE memos SET title = $1, body = $2 WHERE id = $3'
-  save_memos(sql, [title, body, params[:id]])
+  make_prepared_statement(sql, [title, body, params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
   sql = 'DELETE FROM memos WHERE id = $1'
-  save_memos(sql, [params[:id]])
+  make_prepared_statement(sql, [params[:id]])
   redirect '/memos'
 end
 
