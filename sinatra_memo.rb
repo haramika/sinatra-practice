@@ -33,7 +33,7 @@ def find_memo(id)
     FROM memos
     WHERE id = $1
   SQL
-  make_prepared_statement(sql, [id])
+  make_prepared_statement(sql, [id]).first
 end
 
 def add_memo(values)
@@ -94,11 +94,11 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  @memo = find_memo(params[:id])[0]
+  @memo = find_memo(params[:id])
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = find_memo(params[:id])[0]
+  @memo = find_memo(params[:id])
   erb :edit
 end
