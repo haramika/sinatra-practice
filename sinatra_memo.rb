@@ -23,17 +23,13 @@ def load_memos
   CONN.exec(sql)
 end
 
-def make_prepared_statement(sql, values)
-  CONN.exec_params(sql, values)
-end
-
 def find_memo(id)
   sql = <<~SQL
     SELECT *
     FROM memos
     WHERE id = $1
   SQL
-  make_prepared_statement(sql, [id]).first
+  CONN.exec_params(sql, [id]).first
 end
 
 def add_memo(values)
@@ -42,7 +38,7 @@ def add_memo(values)
     (title, body)
     VALUES ($1, $2)
   SQL
-  make_prepared_statement(sql, values)
+  CONN.exec_params(sql, values)
 end
 
 def edit_memo(values)
@@ -51,7 +47,7 @@ def edit_memo(values)
     SET title = $1, body = $2
     WHERE id = $3
   SQL
-  make_prepared_statement(sql, values)
+  CONN.exec_params(sql, values)
 end
 
 def delete_memo(values)
@@ -59,7 +55,7 @@ def delete_memo(values)
     DELETE FROM memos
     WHERE id = $1
   SQL
-  make_prepared_statement(sql, values)
+  CONN.exec_paramsa(sql, values)
 end
 
 get '/memos' do
