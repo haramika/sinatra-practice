@@ -2,11 +2,11 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
 require 'securerandom'
 require 'cgi'
+require 'pg'
 
-MEMOS_FILE = 'memos.json'
+CONN = PG::Connection.new(host: 'localhost', dbname: 'memo')
 
 helpers do
   def h(text)
@@ -15,23 +15,52 @@ helpers do
 end
 
 def load_memos
-  JSON.parse(File.read(MEMOS_FILE))
-end
-
-def save_memos(memos)
-  File.open(MEMOS_FILE, 'w') do |f|
-    JSON.dump(memos, f)
-  end
+  sql = <<~SQL
+    SELECT *
+    FROM memos
+    ORDER BY id
+  SQL
+  CONN.exec(sql)
 end
 
 def find_memo(id)
-  load_memos[id]
+  sql = <<~SQL
+    SELECT *
+    FROM memos
+    WHERE id = $1
+  SQL
+  CONN.exec_params(sql, [id]).first
+end
+
+def add_memo(values)
+  sql = <<~SQL
+    INSERT INTO memos
+    (title, body)
+    VALUES ($1, $2)
+  SQL
+  CONN.exec_params(sql, values)
+end
+
+def edit_memo(values)
+  sql = <<~SQL
+    UPDATE memos
+    SET title = $1, body = $2
+    WHERE id = $3
+  SQL
+  CONN.exec_params(sql, values)
+end
+
+def delete_memo(values)
+  sql = <<~SQL
+    DELETE FROM memos
+    WHERE id = $1
+  SQL
+  CONN.exec_paramsa(sql, values)
 end
 
 get '/memos' do
-  save_memos({}) if !File.exist?(MEMOS_FILE)
-
   @memos = load_memos
+
   erb :top
 end
 
@@ -39,12 +68,7 @@ post '/memos/new' do
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos
-  id = SecureRandom.uuid
-  memos[id] = { 'id' => id, 'title' => title, 'body' => body }
-
-  save_memos(memos)
-
+  add_memo([title, body])
   redirect '/memos'
 end
 
@@ -52,22 +76,12 @@ patch '/memos/:id' do
   title = params[:title]
   body = params[:content]
 
-  memos = load_memos
-  memo = memos[params[:id]]
-  memo['title'] = title
-  memo['body'] = body
-
-  save_memos(memos)
-
+  edit_memo([title, body, params[:id]])
   redirect '/memos'
 end
 
 delete '/memos/:id' do
-  memos = load_memos
-  memos.delete(params[:id])
-
-  save_memos(memos)
-
+  delete_memo([params[:id]])
   redirect '/memos'
 end
 
